@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Mood Music Player</title>
+    <style>
+        body { font-family: sans-serif; text-align: center; background: #121212; color: white; padding-top: 50px; }
+        video { border-radius: 10px; border: 3px solid #1DB954; }
+        button { padding: 15px 30px; background: #1DB954; color: white; border: none; border-radius: 20px; cursor: pointer; font-weight: bold; margin-top: 20px; }
+        #result { display: none; margin-top: 20px; font-size: 24px; }
+        #error-msg { color: #ff4444; margin-top: 15px; display: none; font-size: 16px; }
+    </style>
+</head>
+<body>
+    <h1>Face Mood Scanner</h1>
+    <video id="vid" width="400" height="300" autoplay></video>
+    <canvas id="canvas" style="display:none;"></canvas>
+    <br>
+    <button id="cap-btn">Analyze My Face</button>
+
+    <p id="error-msg"></p>
+
+    <div id="result">
+        <p>Emotion Detected: <span id="emotion-val" style="color:#ff9800"></span></p>
+        <!--<p>Mood: <span id="mood-val" style="color:#1DB954"></span></p>-->
+        <button onclick="window.location.href='/playlist'">Go to Playlist →</button>
+    </div>
+
+    <script>
+        const video = document.getElementById('vid');
+        const canvas = document.getElementById('canvas');
+        const btn = document.getElementById('cap-btn');
+        const errorMsg = document.getElementById('error-msg');
+
+        navigator.mediaDevices.getUserMedia({ video: true }).then(s => video.srcObject = s);
+
+        btn.onclick = async () => {
+            btn.innerText = "Processing...";
+            errorMsg.style.display = 'none';
+            document.getElementById('result').style.display = 'none';
+
+            canvas.width = video.videoWidth;
+            canvas.height = video.videoHeight;
+            canvas.getContext('2d').drawImage(video, 0, 0, video.videoWidth, video.videoHeight);
+            const img = canvas.toDataURL('image/jpeg');
+
+            const res = await fetch('/predict_mood', {
+                method: 'POST',
+                headers: {'Content-Type': 'application/json'},
+                body: JSON.stringify({ image: img })
+            });
+            const data = await res.json();
+
+            if(data.success) {
+                document.getElementById('emotion-val').innerText = data.emotion;
+                //document.getElementById('mood-val').innerText = data.mood;
+                document.getElementById('result').style.display = 'block';
+            } else {
+                errorMsg.innerText = data.error;
+                errorMsg.style.display = 'block';
+            }
+
+            btn.innerText = "Analyze My Face";
+        };
+    </script>
+</body>
+</html>

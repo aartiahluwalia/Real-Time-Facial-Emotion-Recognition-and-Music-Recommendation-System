@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Your personalized Playlist</title>
+    <style>
+        body { 
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; 
+            text-align: center; 
+            background: #121212; 
+            color: white; 
+            padding: 50px; 
+        }
+        .container { max-width: 800px; margin: auto; }
+        h1 { font-size: 2.5em; margin-bottom: 10px; }
+        .mood-badge { 
+            background: #1DB954; 
+            color: white; 
+            padding: 5px 20px; 
+            border-radius: 20px; 
+            text-transform: uppercase; 
+            letter-spacing: 2px;
+            font-size: 0.5em;
+            vertical-align: middle;
+        }
+        .song-list { list-style: none; padding: 0; margin-top: 40px; }
+        .song-item { 
+            background: #181818; 
+            margin: 15px 0; 
+            padding: 20px; 
+            border-radius: 10px; 
+            border: 1px solid #282828;
+            transition: 0.3s;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .song-item:hover { 
+            background: #282828; 
+            transform: scale(1.02);
+            border-color: #1DB954;
+        }
+        .song-info { text-align: left; }
+        .song-name { font-size: 1.2em; font-weight: bold; color: #fff; display: block; }
+        .song-artist { color: #b3b3b3; font-size: 0.9em; }
+        .play-btn { 
+            background: #1DB954; 
+            color: white; 
+            text-decoration: none; 
+            padding: 10px 20px; 
+            border-radius: 25px; 
+            font-weight: bold;
+            font-size: 0.9em;
+        }
+        .play-btn:hover { background: #1ed760; }
+        .back-link { margin-top: 50px; display: inline-block; color: #b3b3b3; text-decoration: none; }
+        .back-link:hover { color: #fff; text-decoration: underline; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Your <span style="color:#1DB954;">{{ mood }}</span> Mix </h1>
+        <p>Based on your facial expression, I have selected these tracks for you.</p>
+
+        <ul class="song-list">
+            {% for song in songs %}
+            <li class="song-item">
+                <div class="song-info">
+                    <span class="song-name">{{ song.track_name }}</span>
+                    <span class="song-artist">{{ song.track_artist }}</span>
+                </div>
+                <a class="play-btn" href="https://www.youtube.com/results?search_query={{ song.track_name|urlencode }}+{{ song.track_artist|urlencode }}" target="_blank">
+                    ▶ PLAY
+                </a>
+            </li>
+            {% endfor %}
+        </ul>
+
+        <a href="/" class="back-link">← Scan Face Again</a>
+    </div>
+</body>
+</html>
